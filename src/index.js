@@ -19,7 +19,8 @@ function asideEvents() {
     
     document.querySelector("#addProjectBtn").addEventListener("click",
         ()=>{
-            let name = document.querySelector("#addProjectTitle").value;
+            let name = document.querySelector("#addProjectTitle").value.trim();
+            if( !name.length ) name = "New Project"
             newProject(name);
         }
     )
@@ -111,15 +112,20 @@ function todoform(id,projectId) {
     document.querySelector("#saveTodo").addEventListener("click",
         (e)=>{
             e.preventDefault();
-            let name = document.querySelector("#todoName").value;
-            let desc = document.querySelector("#todoDesc").value;
-            let date = document.querySelector("#todoDate").value;
-            let priority = document.querySelector("#todoPriority").value;
-            if(id==="none"){
-                newTodo(name,projectId,desc,date,priority);
-            }else{
-                editTodo(name,id,projectId,desc,date,priority);
-            }
+            let name = document.querySelector("#todoName").value.trim();
+            if(!name.length) name = "New todo"
+
+            let desc = document.querySelector("#todoDesc").value.trim();
+            if(!desc.length) desc = "New todo desc"
+
+            let date = document.querySelector("#todoDate").value.trim();
+            if(!date.length) date = "01/01/2020"
+
+            let priority = document.querySelector("#todoPriority").value.trim();
+            if(!priority.length) priority = "mid"
+
+            if(id !== "none") editTodo(name,id,projectId,desc,date,priority);
+            else newTodo(name,projectId,desc,date,priority);
         }
     )
 
