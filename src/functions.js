@@ -48,8 +48,9 @@ function getTodoByID(idProject){
             (item)=> isSameWeek( new Date(), item.getDate() )
         )
     }else{
+        let projectId = parseInt(idProject);
         todoList = getTodoList().filter(
-            (item)=> item.getProjectId() === parseInt(idProject)
+            (item)=> item.getProjectId() === projectId
         )
     }
 

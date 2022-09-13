@@ -148,7 +148,7 @@ function Todo(nameInput,idInput,projectIdInput,descriptionInput,dateInput,priori
         return priority;
     }
 
-    function setStatus(){
+    function changeStatus(){
         isDone = !isDone;
     }
 
@@ -158,83 +158,96 @@ function Todo(nameInput,idInput,projectIdInput,descriptionInput,dateInput,priori
 
     return{
         setName,getName,getId,getProjectId,setDesc,getDesc,
-        setDate,getDate,setPriority,getPriority,setStatus,getStatus}
+        setDate,getDate,setPriority,getPriority,changeStatus,getStatus}
 }
 
 export function addProjectData(name,id,output) {
     for (const item of projectList) {
-        if (item.getName() === name) {
-            return "error";
-        }
+        if (item.getName() === name) return "error";
     }
     let newProject = Project(name,id);
     projectList.push( newProject );
     if(output) return newProject;
 }
 
-export function getProjectData(projectID) {
+export function getProjectData(projectId) {
+    let idProject = parseInt(projectId);
     for (const project of projectList) {
-        if ( project.getId() === parseInt(projectID) ) return project
+        if ( project.getId() === parseInt(idProject) ) return project;
     }
 }
 
 export function delProjectData(projectId) {
-    projectList.splice(projectId,1);
-    for (let i = 0; i < todoList.length; i++) {
-        if (todoList[i].getProjectId() === parseInt(projectId)) {
-            todoList[i] = "delete";
+    let idProject = parseInt(projectId);
+    for (let i = 0; i < projectList.length; i++) {
+        if (projectList[i].getId() === idProject) {
+            projectList.splice(i,1);
+            break;
         }
     }
-    while(todoList.includes("delete")){
-        for (let i = 0; i < todoList.length; i++) {
-            if( todoList[i] === "delete" ) {
-                todoList.splice(i,1);
-                i = todoList.length;
-            }
+    for (let i = 0; i < todoList.length; i++) {
+        if (todoList[i].getProjectId() === idProject) {
+            todoList.splice(i,1);
+            i--;
         }
     }
 }
 
 export function addTodoData(name,id,projectId,description,date,priority,status,output) {
+    let idProject = parseInt(projectId);
     for (const item of todoList) {
-        if (item.getName() === name
-            && item.getProjectId() === projectId) {
+        if (item.getName() === name && 
+            item.getProjectId() === idProject) {
             return "error";
         }
     }
-    let newTodo = Todo(name,id,projectId,description,date,priority,status);
+    let newTodo = Todo(name,id,idProject,description,date,priority,status);
     todoList.push( newTodo );
     if(output) return "done";
 }
 
-export function getTodoData(todoID) {
+export function getTodoData(todoId) {
+    let idTodo = parseInt(todoId);
     for (const todo of todoList) {
-        if ( todo.getId() === parseInt(todoID) ) return todo
+        if ( todo.getId() === idTodo ) return todo;
     }
 }
 
 export function delTodoData(todoId) {
-    todoList.splice(todoId,1);
+    let idTodo = parseInt(todoId);
+    for (let i = 0; i < todoList.length; i++) {
+        if (todoList[i].getId() === idTodo) {
+            todoList.splice(i,1);
+            break;
+        }
+    }
 }
 
 export function editTodoData(name,todoId,description,date,priority){
-    let projectID = todoList[todoId].getProjectId();
-    for(const item of todoList) {
-        if(item.getName() === name && 
-            item.getProjectId() === projectID ) {
-            if( item.getId().toString() !== todoId ) {
-                return "error";
+    let idTodo = parseInt(todoId);
+    for (let i = 0; i < todoList.length; i++) {
+       if(todoList[i].getId() === idTodo){
+            let projectId = todoList[i].getProjectId();
+            for(const item of todoList) {
+                if(item.getId() === idTodo) continue;
+                if( item.getName() === name && 
+                    item.getProjectId() === projectId ) {
+                    return "error";
+                }
             }
-        }
+            todoList[i].setName(name);
+            todoList[i].setDesc(description);
+            todoList[i].setDate(date);
+            todoList[i].setPriority(priority);
+            return "done";
+       }
     }
-    todoList[todoId].setName(name);
-    todoList[todoId].setDesc(description);
-    todoList[todoId].setDate(date);
-    todoList[todoId].setPriority(priority);
-    return "done";
 }
 
 export function changeStatusData( todoId ){
-    let id = parseInt(todoId)
-    todoList[id].setStatus();
+    for (let i = 0; i < todoList.length; i++) {
+        if (todoList[i].getId() === parseInt(todoId)) {
+            todoList[i].changeStatus();
+        }
+    }
 }
